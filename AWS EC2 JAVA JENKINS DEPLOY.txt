@@ -1,0 +1,608 @@
+AWS EC2:
+
+Once account created   and login
+
+select EC2 
+Select Amazon Linux AMI 
+Next
+next
+Add tags
+
+key: name  value:  Jenkins_Server 
+
+security group
+
+create security groups
+
+security group name: devops_project_sg
+
+description: devops_project_sg
+
+ADD rule
+
+customtcp  tcp   8080
+
+launch
+
+create new key pair
+
+then  instead  of putty
+use MOBAXTERM  because  u dont need to  convert PEM  to PPK.
+
+once open MOBAXTERM
+click on session
+click  on  SSH
+Remote host ipv4
+click on advance settings
+select  use private key  :  pem file
+specify user name :ec2-user
+then click  on  ok
+
+
+>sudo  su -
+java -version
+java1.7
+but  we required 1.8  so  remove 1.7
+>yum remove java-1.7.0*
+>java  -version
+
+so  install 1.8
+
+>yum install  java-1.8*
+
+note: here java installing  in jenkins server
+
+
+then  set  java  home path
+
+>find /usr/lib/jvm/java-1.8* | head -n 3
+
+>ls  -l /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-0.48.amzn1.x86_64/jre/
+  ctl-c
+
+>cd  ~
+>vi .bash_profile
+
+JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-0.48.amzn1.x86_64
+PATH=$PATH:$HOME/bin:$JAVA_HOME
+
+esc
+:wq
+
+
+>echo  $JAVA_HOME
+
+
+
+JENKINS INSTALLATION :
+
+https://pkg.jenkins.io/redhat-stable/
+
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+yum install jenkins
+service jenkins status
+service jenkins start
+service jenkins status
+
+open  browswer:  then type
+ipv4:8080
+
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+then  copy pwd and paste  pwd in browser
+
+then skip install plugin
+
+then start jenkins
+
+then select  admin  which is in top corner
+then change pwd
+then login  
+user: admin
+pwd :
+
+
+then select manage jenkins  (to set java home path)
+then select global tool configuration
+then select Add JDK
+name: JAVA_HOME
+JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-0.48.amzn1.x86_64
+
+then  apply 
+save
+
+so  setup  of jenkins done
+
+
+then  next  we will run first JENKINS  job
+
+
+
+
+
+
+then  How to Install & setup  git   in JENKINS SERVER?
+
+hostname jenkins
+sudo su -
+
+install git: 
+
+ yum install git -y
+
+
+then  go back to jenkins browser(jenkins console)
+so  if u want to install required plugins  manually
+so select manage jenkins 
+then select manage plugins
+then search  github
+then select github
+then select install without restart
+then go  to jenkins home page
+
+note : our code in  github  so installing github.so if u want to
+pull the code from github to jenkins then we must need this plugin.
+
+Note: depends on your source code repository like bigbucket,svn.. accordingly
+we can install required plugins.
+
+
+
+setup the git  in Jenkins browser(Jenkins console) :
+
+
+select manage jenkins
+select global tool configuration
+
+name: github
+
+select apply  then save
+
+Note: Git can directly working with github so no need to give complete github
+link.
+
+
+
+How to  integrate MAVEN  with JENKINS:
+
+go to google.com   download maven
+
+https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+go to Jenkins server
+
+
+pwd
+cd /opt
+ls -ltr
+
+
+wget https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+tar -xvzf
+
+
+mv apache-maven-3.6.1 maven
+
+cd maven/
+pwd
+ls
+
+
+Set Maven Home path :
+
+vi ~/.bash_profile
+
+M2_HOME=/opt/maven
+M2=/opt/maven/bin
+PATH=$PATH:$HOME/bin:$JAVA_HOME:$M2:$M2_HOME
+
+
+exit
+
+sudo su -
+
+echo $M2
+
+echo $M2_HOME
+
+
+mvn  --version
+
+
+So far we have completed the installation of maven software to
+support maven plugin on the jenkins console(browser). Let's jump onto Jenkins 
+to complete the remaining steps.
+
+
+select  manage jenkins
+select manage plugins
+so select maven invoker
+and select maven integration
+then select install without restart
+
+next we need to configure 
+
+then go to jenkins home page
+then  selet manage jenkins
+then select global tool configuration
+
+then add maven
+name: M2_HOME
+maven_home: /opt/maven
+
+Note: till now we done setup git and maven
+
+
+
+CREATE  FIRST MAVEN  JOB :(We are going test how build hapn with maven)
+
+go Jenkins console(browswer)
+
+ 
+newitem
+itemname
+select maven project
+Note: to build with code so we need source code (where in github)
+
+select  helloworld project link  in github website
+copy link and paste into repository link
+
+Note: helloworld project is public repository so no need credentials
+but credentials need private repository
+
+goals and options : clean instll package
+
+then apply and save
+
+then  click on build now
+then see build history
+ 
+Note: it is first time to build it will take while becuase all dependencies
+executing and some test cases  executing.
+
+
+nOTE: workspace is using to store the all executed code and outputs(wars)
+Note:usually outcome of build  is storing in target as WAR.
+
+ex: webapp.war    this web applicaton development
+
+
+same we can find in JENKINS SERVER also
+
+cd  /var/lib/jenkins/workspace 
+ls
+cd  myfirstmavenjob
+
+cd webapp/target
+ls
+
+
+
+webapp.war
+
+
+so  we need to host this war  in Tomcat server using JENKINS
+
+so first we need to setup TOMCAT server.
+second we need integration tomcat with JENKINS
+
+
+
+ TOMCAT SERVER SETUP :
+
+
+go to AWS then launch  new instance for Tomcat server
+
+Note: use same existing pem file and same security group
+
+open tomcat server
+
+sudo su -
+hostname tomcat
+sudo su -
+
+cd /opt
+
+wget http://apachemirror.wuchna.com/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
+ls
+
+tar  -xvzf apache-tomcat-8.5.50.tar.gz
+
+mv apache-tomcat-8.5.50 tomcat
+
+cd tomcat/
+
+ls
+
+cd bin
+
+ls
+
+./startup.sh
+
+
+then  open browser :
+
+copy  ipv4 of tomcat instance of aws and paste into url of browser:
+
+ipv4:8080
+
+Note: by default tomcat server allows from local system.
+By default the Manager is only accessible from a browser running on the
+same machine as Tomcat. If you wish to modify this restriction, 
+you'll need to edit the Manager's context.xml file.
+then only users can only access outside of the tomcat server.
+
+
+
+so  go to  TOMCAT SERVER 
+
+find / -name context.xml
+
+
+nOTE: 2 webapp  files  we need to edit
+
+
+<!--   -->
+
+<!--    -->
+
+cd ..
+cd..
+cd bin
+
+./shutdown.sh
+./startup.sh
+
+
+then go to  browser of tomcat then click on  manager app
+
+username
+pwd
+
+so we need  add the users so copy the users of tomcat file of github
+
+Note: user Deployer using to deploy war  files from  JENKINS
+Note: User tomcat using to access the tomcat settings
+
+pwd
+cd ..
+ls
+cd conf/
+ls
+vi tomcat-users.xml
+
+note: paste all users here
+
+cd ../bin/
+ls -l
+>./shutdown.sh
+>./startup.sh
+
+then open  tomcat browser then click on manager app 
+
+user: tomcat
+pwd: secret
+
+
+
+DEPLOY  ON  EC2  using JENKINS:
+
+
+
+Flow:developers >git > jenkins > war file> cloud(awsec2)
+
+
+
+so  let us integrate tomcat server with JENKINS then we can able  to
+deploy to tomcat  server
+
+
+open  JENKINS  BROWSER
+
+select Manage jenkins
+
+select manage plugins
+
+then search deploy to container
+
+then select deploy to container
+
+then select install without restart
+
+
+Note: Deploy to container plugin is using to deploy to any cloud or vm or
+any other application server
+
+So  we will create  job for deployment of war file into tomcat server.
+
+then clieck  on newitem
+
+
+item name:  Deploy_on_tomcat_server
+
+select maven project
+select ok
+description: deploy on vm
+then select source code management :GIT
+then copy the repository url
+
+goal and options:  clean install package
+
+post-build actions: select deploy war/ear to container
+
+WAR/EAR File:**/*.war   ( click on question mark)
+
+Containers: add container  select tomcat8.x
+
+credentials:
+
+nOTE: to deploy into tomcat server so tomcat server should accept
+jenkins authentication so user of tomcat server is DEPLOYER
+
+
+open Tomcat server(command)
+
+cd /opt/tomcat/conf/tomcat-users.xml
+
+Note: note the deployer username &pwd is deployer
+
+come to jenkins browser
+
+credentials   click on add  jenkins
+
+username: deployer
+pwd:deployer
+id: deployer_user
+decription:user to deploy on tomcat vm
+then click on add
+then chose the user deployer
+then tomcat url:
+then apply  and save.
+
+
+Note: when we execute this job then copy the war into target tomcat server
+(while doing with authentication of deployer user)
+
+Note: tomcat default location is  webapp
+
+
+open tomcat server(command)
+
+
+cd /opt/tomcat/
+
+cd webapps/
+
+ls -l
+
+Note: so war will be in the webapps
+
+
+then  open JENKINS browser : 
+
+then click  on BUILD NOW
+
+
+Note:  once  build success then  go  Tomcat server(command) then
+check  webapp.war  deployed or not 
+
+
+ls -l
+
+Note:
+once WEBAPP.WAR  is in Tomcat webapp
+then if we want to access this  application  then
+we need to give WAR  file name in the tomcat browser.
+
+ip:8080/webapp
+
+
+
+
+
+
+HOW CAN BUILD HAPPENS AUTOMATICALLY WHENEVER THERE IS CHANGE IN THE CODE ??
+
+
+This is intersting:
+
+
+open Jenkins browser
+select existing project
+select configure
+then see build triggers here 5  options :
+
+
+select POLL SCM: is using to fetch the data from repository:
+if any changes the code then trigger happens  else  not
+
+schedule:  *****
+
+it is means every min ,hr ,day ,week ,month
+
+then apply and save
+
+then since there is change ..triggering
+
+nOW we will change code then see how POLL scm works ?
+
+then open jenkins server(command)
+
+git clone  githib url
+
+git pull
+
+ls
+
+Note: we are going to modify index.jsp which is webapp
+
+cd webapp/
+cd webapp/src/main/webapp/
+ls
+cat index.jsp
+
+vi index.jsp
+
+<h2> deploying on cloud </h2>
+
+
+git status
+
+
+git add
+git commit -m "modified index.jsp"
+
+git push  origin master
+
+git status
+
+
+then open github browser check it num of commits
+and check index.jsp
+
+then open jenkins browser so  build execute after 1 miniute
+
+
+so  once build success 
+
+then open tomcat browser and refresh .. then see output
+
+so this  is automate the job  whenever change the code
+
+Note: here jenkins using C build and C deploy in to tomcat
+
+
+
+
+HOW  TO DEPLOY  IN  TO DOCKER  CONTAINER:
+
+
+Flow: Developers > git > jenkins >  war file > Docker
+
+
+first  we need DOCKER ENV SETUP
+
+second  we need integration DOCKER  with Jenkins
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
