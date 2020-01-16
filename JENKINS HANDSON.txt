@@ -1,0 +1,91 @@
+JENKINS (Continous integration) Hands-on  in UBUNTU:
+
+https://linuxize.com/post/how-to-install-jenkins-on-ubuntu-18-04/
+
+https://medium.com/dev-blogs/step-by-step-guide-to-install-jenkins-on-ubuntu-16-04-fba5f32ed402
+
+
+Note:  in case if jenkins installation status inactive then  use below commands
+
+
+$ sudo ufw enable
+$sudo ufw status 
+
+How to create JENKINS jobs and How to RUN ?
+
+Run  First  JENKINS  job  Hands-on:
+
+
+1.click on new item
+give job name
+select freestyle project
+then give description,
+ignore git or svn
+select build as
+execute shell
+then apply and save
+then  click  on build now
+then u can  see blue circle
+here blue indicate success
+red is fail
+orange is partiallly executed
+then click on circle 
+then see output.
+
+
+
+
+
+JENKINS CI/CD Pipeline:
+
+
+Jenkins installation in AWS
+GIT setup
+Maven setup
+
+INTEGRATING TOMCAT server in CI/CD pipeline:
+
+Tomcat server setup
+Deploy War file on Tomcat vm using JENKINS
+
+
+INTEGRATING DOCKER in  CI/CD Pipeline:
+
+Docker setup
+integrating docker with jenkins
+jenkins job to copy artifacts on to Docker host
+create docker file
+Deploy a war file on Docker container using Jenkins
+
+
+INTEGRATING ANSIBLE in CI/CD pipeline:
+
+Ansible setup
+Integrate Ansible with jenkins
+creating an Ansible playbook
+common issues faced during practise
+Run Ansible playbooks from Jenkins
+...
+....
+Jenkins job to deploy  a war file on  Docker container
+using Ansible
+
+
+
+Integrating  KUBERNETES  in  CI/CD pipeline
+
+setup Kubernetes on Ubuntu server &
+setup cluster on AWS
+...
+...
+Automate deployment on KUBERNETES withCI/CD job
+setup ci/cd job for KUBERNETES 
+
+
+
+
+
+
+
+
+

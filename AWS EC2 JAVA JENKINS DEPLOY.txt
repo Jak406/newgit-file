@@ -184,7 +184,7 @@ wget https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.
 tar -xvzf
 
 
-mv apache-maven-3.6.1 maven
+mv apache-maven-3.6.3 maven
 
 cd maven/
 pwd
